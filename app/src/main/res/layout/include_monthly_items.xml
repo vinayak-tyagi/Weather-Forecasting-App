@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:elevation="10sp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#80ffa500"
+    android:layout_marginTop="2sp"
+    android:layout_marginBottom="2sp">
+
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:id="@+id/month_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jan"
+            android:textSize="20sp"
+            android:padding="3sp"
+            android:textColor="@color/white"
+            android:layout_marginRight="40sp" />
+
+
+    <TextView
+        android:id="@+id/temp_monthly"
+        android:text="TempMax"
+        android:textColor="@color/red"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/month_name" />
+
+    <TextView
+        android:id="@+id/tempmin_monthly"
+        android:text="TempMin"
+        android:textColor="@color/blue"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/temp_monthly"/>
+
+
+    <TextView
+        android:textAlignment="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rain_monthly"
+        android:layout_below="@+id/tempmin_monthly"
+        android:layout_centerInParent="true"
+        android:text="AvgRain"
+        android:textColor="@color/white" />
+</RelativeLayout>

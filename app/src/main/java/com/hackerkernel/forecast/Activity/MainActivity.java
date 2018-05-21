@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setContentView(R.layout.activity_main);
         requestQueue = Volley.newRequestQueue(this);
 
-        // GPS CODE
         isGPSEnable();
         isNetworkAvailable();
         mGoogleApiClient = new GoogleApiClient.Builder(MainActivity.this)
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Log.e("static name, location","\n"+ location);
                      onFetchingData(location);
                 }else{
-                    Toast.makeText(MainActivity.this, "Please Enter Valid Input", Toast.LENGTH_SHORT).show();
+                     searchtxt.setError("Please Enter Valid Input");
                 }
              }
         });
@@ -147,12 +146,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         pd.show();
 
         // NOTE THAT THE API KEY OVERHERE IS HIGHLY IMPORTANT AND CONFIDENTIAL
-        StringRequest stringRequest = new StringRequest(Request.Method.GET,"http://api.worldweatheronline.com/premium/v1/weather.ashx?key=*****&q="+locationName+"&format=json&num_of_days=7",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET,"https://api.worldweatheronline.com/premium/v1/weather.ashx?key=c3527523f7794c2888950956180704&q="+locationName+"&format=json&num_of_days=7",
         new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pd.dismiss();
-                Util.JsonParse(response);
+                try {
+                    Util.JsonParse(response,MainActivity.this);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 UIuppdate();
 
             }
@@ -161,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             public void onErrorResponse(VolleyError error) {
                 pd.dismiss();
                 Toast.makeText(MainActivity.this, "Bad Network Connection", Toast.LENGTH_SHORT).show();
-                Log.e("Vin: MainActivity", "This error from json calling");
+               Log.e("Vin: MainActivity", "This error from json calling");
                 error.printStackTrace();
             }
         });
@@ -296,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
     }
 
-    public boolean isGPSEnable(){
+    private boolean isGPSEnable(){
         LocationManager manager = (LocationManager) MainActivity.this.getSystemService(LOCATION_SERVICE);
         boolean enable = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (!enable){
@@ -345,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private void getlocationName(double lat,double lon)  {
         isNetworkAvailable();
         pd.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&key=",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&key=AIzaSyDWu-sNamRjuzoaXZXBBTAROGWZa8PFp1k",
                 new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -365,7 +368,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onErrorResponse(VolleyError error) {
                 pd.dismiss();
-                Toast.makeText(MainActivity.this, "Bad Network Connection", Toast.LENGTH_SHORT).show();
                 Log.e("Vin: MainActivity", "This error from json location calling");
                 error.printStackTrace();
             }

@@ -1,8 +1,18 @@
 package com.hackerkernel.forecast.Utils;
 
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.hackerkernel.forecast.Activity.MainActivity;
 import com.hackerkernel.forecast.Pojo.CurrentPojo;
 import com.hackerkernel.forecast.Pojo.DayPojo;
 import com.hackerkernel.forecast.Pojo.HourlyPojo;
@@ -13,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,7 +38,7 @@ public class Util  {
     public static List<MonthlyPojo> monthlyPojoList;
     public static List<HourlyPojo> hourlyPojoList;
 
-    public static void JsonParse(String response) {
+    public static void JsonParse(String response, Context context) throws JSONException {
      Log.e("Response",response);
         CurrentPojo currentPojo = new CurrentPojo();
         dayPojoList = new ArrayList<>();
@@ -125,7 +136,6 @@ public class Util  {
                 );
 
                hourlyPojoList.add(hourlyPojo);
-
 //                Log.e("VIN: HOURLY WEATHER",timeh+"\n"+
 //                        temph+"\n"+
 //                        precip+"\n"+
@@ -155,7 +165,6 @@ public class Util  {
                         maxtemp,
                         rainfal
                 );
-
                 monthlyPojoList.add(monthlyPojo);
 
 //                Log.e("VIN: MONTHLY WEATHER",month+"\n"+
@@ -166,10 +175,12 @@ public class Util  {
 
             }// END OF LOOP
 
-            Log.e("VIN:","jason parse sucessffuly");
+            Log.e("VIN:","jason parse successfully");
 
         } catch (JSONException e) {
-            Log.e("VIN: ","Error in fetching Json Parsing");
+//            onErrorParse(response,context);
+            Log.e("VIN: ","Invalid Input by User");
+            Toast.makeText(context, "Unable to find Location !!!", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -237,5 +248,6 @@ public class Util  {
 
         return location;
     }
+
 
 }

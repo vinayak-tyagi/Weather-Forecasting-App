@@ -51,7 +51,7 @@ public class ListActivity extends AppCompatActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    title = "Hourly List";
+                    getSupportActionBar().setTitle("Hourly List");
                     hourlyAdapter = new HourlyAdapter(getApplicationContext(),R.layout.include_hourly_items,Util.hourlyPojoList);
                     listView.setAdapter(hourlyAdapter);
                 }

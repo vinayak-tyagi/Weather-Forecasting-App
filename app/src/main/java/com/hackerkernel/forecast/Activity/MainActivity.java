@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-
     private void refresh() {
         swipeRefreshLayout.setRefreshing(true);
         onFetchingData(name);

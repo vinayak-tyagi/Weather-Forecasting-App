@@ -2,6 +2,8 @@ package com.hackerkernel.forecast.Utils;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -235,19 +237,97 @@ public class Util  {
         return Icon_id;
     }
 
-    public static String JsonParselocation(String response) throws JSONException {
+//    public static String JsonParselocation(String response) throws JSONException {
+//
+//        JSONObject jsonObject = new JSONObject(response);
+//        JSONArray resultsArrary = jsonObject.getJSONArray("results");
+//
+//            JSONObject innerObj = resultsArrary.getJSONObject(resultsArrary.length()-3);
+//            String  location = innerObj.getJSONArray("address_components").getJSONObject(0).getString("long_name");
+//            Log.e("VIN: parse name:", location);
+//
+//            Log.e("VIN:","Location data parse successfully");
+//
+//        return location;
+//    }
 
-        JSONObject jsonObject = new JSONObject(response);
-        JSONArray resultsArrary = jsonObject.getJSONArray("results");
 
-            JSONObject innerObj = resultsArrary.getJSONObject(resultsArrary.length()-3);
-            String  location = innerObj.getJSONArray("address_components").getJSONObject(0).getString("long_name");
-            Log.e("VIN: parse name:", location);
-
-            Log.e("VIN:","Location data parse successfully");
-
-        return location;
+    public static String handleVolleyError(VolleyError error) {
+        String message = null;
+        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+            message = "Bad network Connection";
+        } else if (error instanceof AuthFailureError) {
+            message = "Failed to perform a request";
+        } else if (error instanceof ServerError) {
+            message = "Server error";
+        } else if (error instanceof NetworkError) {
+            message = "Network error while performing a request";
+        } else if (error instanceof ParseError) {
+            message = "Server response could not be parsed";
+        }
+        return message;
     }
 
+
+    public static void handleSimpleVolleyRequestError(VolleyError error, Context context) {
+        if (error.networkResponse != null) {
+            int statusCode = error.networkResponse.statusCode;
+            try {
+                String body = new String(error.networkResponse.data, "UTF-8");
+                if (statusCode == 400) {
+                    //server error
+                    String errorMsg = Util.simpleJsonParser(body);
+                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+                }else if (statusCode == 401){
+                    Toast.makeText(context, "You are unauthorized to view this request. Please try again", Toast.LENGTH_SHORT).show();
+                }else if (statusCode == 422){
+                    JSONObject  json = new JSONObject(body);
+                    JSONArray namearray = json.names();
+
+                    if (namearray.length() > 0){
+                        String key = namearray.get(0).toString();
+                        JSONArray ja = json.getJSONArray(key);
+                        Toast.makeText(context, ja.get(0).toString(), Toast.LENGTH_SHORT).show();
+                    }
+
+                }else {
+                    String errorString = handleVolleyError(error);
+                    Toast.makeText(context, errorString, Toast.LENGTH_SHORT).show();
+                }
+            } catch (UnsupportedEncodingException | JSONException e) {
+                e.printStackTrace();
+                showParsingErrorAlert(context);
+            }
+        } else {
+            String errorString = handleVolleyError(error);
+            Toast.makeText(context, errorString, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //Parse Simple JSON Parse
+    private static String simpleJsonParser(String response) throws JSONException {
+        JSONObject obj = new JSONObject(response);
+        return obj.getString("msg");
+    }
+
+    private static void showParsingErrorAlert(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(context.getString(R.string.oops))
+                .setMessage(context.getString(R.string.dont_worry_engineers_r_working))
+                .setNegativeButton(context.getString(R.string.report_issue), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //TODO:: take user to report issue area
+                    }
+                })
+                .setPositiveButton(context.getString(R.string.try_again), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
 }

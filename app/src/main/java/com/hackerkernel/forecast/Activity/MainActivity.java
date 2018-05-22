@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onErrorResponse(VolleyError error) {
                 pd.dismiss();
-                Toast.makeText(MainActivity.this, "Bad Network Connection", Toast.LENGTH_SHORT).show();
+                Util.handleSimpleVolleyRequestError(error,MainActivity.this);
                Log.e("Vin: MainActivity", "This error from json calling");
                 error.printStackTrace();
             }
@@ -240,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         if (location == null) {
             Log.e("VIN:","location is null");
+            Toast.makeText(this, "Unable to find location !! Try again", Toast.LENGTH_SHORT).show();
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
         } else {
@@ -344,51 +345,53 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         builder.create().show();
     }
 
-    private void getlocationName(double lat,double lon)  {
-        isNetworkAvailable();
-        pd.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&key=AIzaSyDWu-sNamRjuzoaXZXBBTAROGWZa8PFp1k",
-                new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pd.dismiss();
-
-                Log.e("VIN: location",response);
-                try {
-                    name = Util.JsonParselocation(response);
-                } catch (JSONException e) {
-                    Log.e("VIN: ","error in location json parse");
-                    e.printStackTrace();
-                }
-                onFetchingData(name);
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pd.dismiss();
-                Log.e("Vin: MainActivity", "This error from json location calling");
-                error.printStackTrace();
-            }
-        });
-
-        requestQueue.add(stringRequest);
-    }
-
-//    private String getlocationName(double lat,double lon)  {
-//        Geocoder geocoder = new Geocoder(MainActivity.this);
-//        try {
-//            List<Address> addressList = geocoder.getFromLocation(lat,lon,1);
-//            if (addressList != null & addressList.size() > 0){
-//                Address address = addressList.get(0);
-//                String result = address.getLocality();
-//                return  result;
+//    private void getlocationName(double lat,double lon)  {
+//        isNetworkAvailable();
+//        pd.show();
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&key=AIzaSyDWu-sNamRjuzoaXZXBBTAROGWZa8PFp1k",
+//                new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                pd.dismiss();
+//
+//                Log.e("VIN: location",response);
+//                try {
+//                    name = Util.JsonParselocation(response);
+//                } catch (JSONException e) {
+//                    Log.e("VIN: ","error in location json parse");
+//                    e.printStackTrace();
+//                }
+//                onFetchingData(name);
+//
 //            }
-//        } catch (IOException e) {
-//            Log.e("VIN:","Unable to get Location Name");
-//            e.printStackTrace();
-//        }
-//        return null;
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                pd.dismiss();
+//                Util.handleSimpleVolleyRequestError(error,MainActivity.this);
+//                Log.e("Vin: MainActivity", "This error from json location calling");
+//                error.printStackTrace();
+//            }
+//        });
+//
+//        requestQueue.add(stringRequest);
 //    }
+
+    private String getlocationName(double lat,double lon)  {
+        Geocoder geocoder = new Geocoder(MainActivity.this);
+        try {
+            List<Address> addressList = geocoder.getFromLocation(lat,lon,1);
+            if (addressList != null & addressList.size() > 0){
+                Address address = addressList.get(0);
+                String result = address.getLocality();
+                return  result;
+            }
+        } catch (IOException e) {
+            Toast.makeText(this, "Unable to find location !! Try again", Toast.LENGTH_SHORT).show();
+            Log.e("VIN:","Unable to get Location Name");
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }
